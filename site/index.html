@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Contract Interaction</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+</head>
+<body>
+    <h1>Smart Contract Interaction</h1>
+    <input type="text" id="inputValue" placeholder="Enter value to set">
+    <button onclick="setValue()">Set Value</button>
+    <button onclick="getValue()">Get Value</button>
+    <p id="storedValue">Stored Value: </p>
+
+    <script>
+        // Initialize Web3
+        if (window.ethereum) {
+            var web3 = new Web3(window.ethereum);
+            window.ethereum.request({ method: 'eth_requestAccounts' })
+                .then(function (accounts) {
+                    window.account = accounts[0];
+                })
+                .catch(function (error) {
+                    console.error("User denied account access or there was an error:", error);
+                });
+        } else {
+            alert('Please install MetaMask!');
+        }
+
+        // ABI และที่อยู่ของ Smart Contract
+        const contractAddress = '0x1992456262a6cbb69c1a03570857d7995d8d24e6'; // ที่อยู่ของคุณ
+        const abi = [
+            {
+                "inputs": [
+                    { "internalType": "uint256", "name": "x", "type": "uint256" }
+                ],
+                "name": "set",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "get",
+                "outputs": [
+                    { "internalType": "uint256", "name": "", "type": "uint256" }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "storedData",
+                "outputs": [
+                    { "internalType": "uint256", "name": "", "type": "uint256" }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
+
+        const contract = new web3.eth.Contract(abi, contractAddress);
+
+        async function setValue() {
+            const value = document.getElementById('inputValue').value;
+            try {
+                await contract.methods.set(value).send({ from: window.account });
+                alert("Value set successfully!");
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function getValue() {
+            try {
+                const value = await contract.methods.get().call();
+                document.getElementById('storedValue').innerText = "Stored Value: " + value;
+            } catch (err) {
+                console.error(err);
+            }
+        }
+    </script>
+</body>
+</html>
