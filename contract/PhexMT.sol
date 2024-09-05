@@ -1,18 +1,22 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+contract PhexMT {
+    string public name = "PhexMT";
+    string public symbol = "Phex";
+    uint8 public decimals = 18;
+    uint256 public totalSupply = 1000000 * (10 ** uint256(decimals));
+    mapping(address => uint256) public balanceOf;
 
-contract PhexMT is ERC20, Ownable {
-    constructor() ERC20("PhexMT", "PHEX") {
-        // Mint 1 million tokens to the owner
-        _mint(msg.sender, 1000000 * 10 ** decimals());
+    constructor() {
+        // โอนเหรียญ 1 ล้านเหรียญให้กับ Smart Contract เอง
+        balanceOf[address(this)] = totalSupply;
     }
 
-    function airdrop(address recipient, uint256 amount) external onlyOwner {
-        require(amount <= 1000 * 10 ** decimals(), "Cannot send more than 1000 tokens at once");
-        require(amount <= balanceOf(owner()), "Insufficient balance in contract");
-        _transfer(owner(), recipient, amount);
+    function transfer(address _to, uint256 _value) public returns (bool success) {
+        require(balanceOf[address(this)] >= _value, "Insufficient contract balance");
+        balanceOf[address(this)] -= _value;
+        balanceOf[_to] += _value;
+        return true;
     }
 }

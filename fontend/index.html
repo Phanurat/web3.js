@@ -1,70 +1,138 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>PhexMT Airdrop</title>
-    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airdrop Claim</title>
+    <script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.min.js"></script>
 </head>
+
 <body>
-    <h1>PhexMT Airdrop</h1>
-    <button id="connectButton">Connect MetaMask</button>
-    <button id="airdropButton" style="display:none;">Claim 1000 PhexMT</button>
+    <h1>Claim Your Airdrop</h1>
+    <button id="connectWallet">Connect Wallet</button>
+    <p id="walletAddress"></p>
+    <button id="claimAirdrop" disabled>Claim Airdrop</button>
     <p id="status"></p>
 
     <script>
-        const contractAddress = 'YOUR_CONTRACT_ADDRESS'; // Replace with your contract address
-        const contractABI = [
-            {
-                "constant": false,
-                "inputs": [
-                    {
-                        "name": "recipient",
-                        "type": "address"
-                    },
-                    {
-                        "name": "amount",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "airdrop",
-                "outputs": [],
-                "payable": false,
-                "stateMutability": "nonpayable",
-                "type": "function"
-            }
-        ];
+        // ข้อมูลของ Airdrop Contract
+        const airdropAbi =
+            [
+                {
+                    "inputs": [],
+                    "name": "claimAirdrop",
+                    "outputs": [],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "inputs": [
+                        {
+                            "internalType": "address",
+                            "name": "_tokenAddress",
+                            "type": "address"
+                        }
+                    ],
+                    "stateMutability": "nonpayable",
+                    "type": "constructor"
+                },
+                {
+                    "inputs": [],
+                    "name": "airdropAmount",
+                    "outputs": [
+                        {
+                            "internalType": "uint256",
+                            "name": "",
+                            "type": "uint256"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [
+                        {
+                            "internalType": "address",
+                            "name": "",
+                            "type": "address"
+                        }
+                    ],
+                    "name": "hasClaimed",
+                    "outputs": [
+                        {
+                            "internalType": "bool",
+                            "name": "",
+                            "type": "bool"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "name": "token",
+                    "outputs": [
+                        {
+                            "internalType": "contract IMyToken",
+                            "name": "",
+                            "type": "address"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                }
+            ]
+            ;
+        const airdropContractAddress = '0xBE511686Fc55A8ed0D66484F356279B1c589F462'; // ที่อยู่ของ Airdrop Contract
 
-        let web3;
-        let contract;
-        let userAccount;
+        let provider;
+        let signer;
+        let airdropContract;
 
-        window.addEventListener('load', async () => {
+        // ฟังก์ชันการเชื่อมต่อกระเป๋า Metamask
+        async function connectWallet() {
             if (window.ethereum) {
-                web3 = new Web3(window.ethereum);
                 try {
+                    // ขอให้ผู้ใช้เชื่อมต่อกระเป๋า
                     await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    userAccount = (await web3.eth.getAccounts())[0];
-                    document.getElementById('connectButton').style.display = 'none';
-                    document.getElementById('airdropButton').style.display = 'inline';
-                    document.getElementById('status').innerText = 'Connected to MetaMask';
-                    
-                    contract = new web3.eth.Contract(contractABI, contractAddress);
+                    provider = new ethers.providers.Web3Provider(window.ethereum);
+                    signer = provider.getSigner();
+
+                    const userAddress = await signer.getAddress();
+                    document.getElementById('walletAddress').innerText = `Connected: ${userAddress}`;
+
+                    // เปิดใช้งานปุ่ม Claim
+                    document.getElementById('claimAirdrop').disabled = false;
+
+                    // เชื่อมต่อกับ Contract
+                    airdropContract = new ethers.Contract(airdropContractAddress, airdropAbi, signer);
                 } catch (error) {
-                    document.getElementById('status').innerText = 'User denied account access.';
+                    console.error("Error connecting to Metamask:", error);
+                    document.getElementById('status').innerText = "Error connecting to Metamask";
                 }
             } else {
-                document.getElementById('status').innerText = 'MetaMask not detected. Please install MetaMask.';
+                alert('Please install Metamask!');
             }
-        });
+        }
 
-        document.getElementById('airdropButton').onclick = async () => {
+        // ฟังก์ชันสำหรับ Claim Airdrop
+        async function claimAirdrop() {
             try {
-                await contract.methods.airdrop(userAccount, web3.utils.toWei('1000', 'ether')).send({ from: userAccount });
-                document.getElementById('status').innerText = 'Successfully claimed 1000 PhexMT!';
+                const tx = await airdropContract.claimAirdrop();
+                document.getElementById('status').innerText = "Transaction sent! Waiting for confirmation...";
+                await tx.wait(); // รอการยืนยันธุรกรรม
+                document.getElementById('status').innerText = "Airdrop claimed successfully!";
             } catch (error) {
-                console.error(error);
-                document.getElementById('status').innerText = 'Failed to claim PhexMT. Check console for errors.';
+                console.error("Error claiming airdrop:", error);
+                document.getElementById('status').innerText = `Error: ${error.message}`;
             }
-        };
+        }
+
+        // ตั้งค่า event listeners
+        document.getElementById('connectWallet').addEventListener('click', connectWallet);
+        document.getElementById('claimAirdrop').addEventListener('click', claimAirdrop);
     </script>
 </body>
+
 </html>
