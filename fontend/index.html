@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Math Quiz with Rewards</title>
     <script src="https://cdn.jsdelivr.net/npm/web3@1.7.0/dist/web3.min.js"></script>
 </head>
+
 <body>
     <h1>Math Quiz - Win Rewards!</h1>
 
@@ -26,8 +28,90 @@
     <script>
         let web3;
         let userAccount;
-        const contractAddress = "0xYourSmartContractAddress";  // ใส่ Smart Contract Address ที่ได้จากการ deploy
-        const abi = [ /* ใส่ ABI ของ Smart Contract ที่คุณ deploy */ ];
+        const contractAddress = "0xD48BAb709d19B0b878016dEF4aeE6544D5A6C819";  // ใส่ Smart Contract Address ที่ได้จากการ deploy
+        const abi = [
+
+            {
+                "inputs": [],
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "RewardSent",
+                "type": "event"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "name": "balances",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "owner",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    }
+                ],
+                "name": "rewardUser",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "withdraw",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "stateMutability": "payable",
+                "type": "receive"
+            }
+        ];
 
         // ฟังก์ชันเชื่อมต่อ MetaMask กับ BSC Testnet
         async function connectMetaMask() {
@@ -65,7 +149,7 @@
         }
 
         // ฟังก์ชันตรวจสอบคำตอบและโอนเหรียญ
-        document.getElementById("submitAnswer").addEventListener("click", async function() {
+        document.getElementById("submitAnswer").addEventListener("click", async function () {
             const answer = parseInt(document.getElementById("answer").value);
             if (answer === num1 + num2) {
                 document.getElementById("result").textContent = "Correct! Sending reward...";
@@ -77,16 +161,17 @@
                 contract.methods.rewardUser(userAccount).send({
                     from: userAccount
                 })
-                .on('receipt', function(receipt) {
-                    document.getElementById("result").textContent = "Reward sent!";
-                })
-                .on('error', function(error) {
-                    document.getElementById("result").textContent = "Error: " + error.message;
-                });
+                    .on('receipt', function (receipt) {
+                        document.getElementById("result").textContent = "Reward sent!";
+                    })
+                    .on('error', function (error) {
+                        document.getElementById("result").textContent = "Error: " + error.message;
+                    });
             } else {
                 document.getElementById("result").textContent = "Wrong answer, try again!";
             }
         });
     </script>
 </body>
+
 </html>
