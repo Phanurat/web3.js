@@ -144,7 +144,7 @@ window.onload = () => {
                 document.getElementById('claimButton').style.display = 'block';
                 document.getElementById('status').innerText = 'Connected to MetaMask';
             } catch (error) {
-                document.getElementById('status').innerText = `Error connecting MetaMask: ${error.message}`;
+                document.getElementById('status').innerText = "User denied account access";
                 console.error("Error connecting MetaMask:", error);
             }
         });
@@ -154,6 +154,14 @@ window.onload = () => {
             const account = accounts[0];
 
             try {
+                // Check if the user has already claimed tokens
+                const hasClaimed = await contract.methods.hasClaimed(account).call();
+
+                if (hasClaimed) {
+                    document.getElementById('status').innerText = 'You have already claimed your tokens.';
+                    return;
+                }
+
                 console.log("Attempting to claim tokens...");
                 const gasEstimate = await contract.methods.claimTokens().estimateGas({ from: account });
                 console.log("Estimated gas:", gasEstimate);
