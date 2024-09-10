@@ -13,10 +13,4 @@ contract PhexMT {
         balanceOf[address(this)] = totalSupply;
     }
 
-    function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balanceOf[address(this)] >= _value, "Insufficient contract balance");
-        balanceOf[address(this)] -= _value;
-        balanceOf[_to] += _value;
-        return true;
-    }
 }
