@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 3000
 
 # รันคำสั่งเพื่อเริ่มต้นแอป
-CMD ["node", "sever.js"]
+CMD ["node", "server.js"]
