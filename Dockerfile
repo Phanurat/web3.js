@@ -7,7 +7,7 @@ WORKDIR /usr/src/app
 # คัดลอกไฟล์ package.json และ package-lock.json (ถ้ามี) ไปยัง working directory
 COPY package*.json ./
 
-# ติดตั้ง dependencies
+# ติดตั้ง dependencies จาก package.json รวมถึง express
 RUN npm install
 
 # ถ้ามีการใช้ production build สำหรับ dependencies ใช้คำสั่งนี้แทน:
