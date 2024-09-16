@@ -10,9 +10,6 @@ COPY package*.json ./
 # ติดตั้ง dependencies จาก package.json รวมถึง express
 RUN npm install
 
-# ถ้ามีการใช้ production build สำหรับ dependencies ใช้คำสั่งนี้แทน:
-# RUN npm ci --only=production
-
 # คัดลอกไฟล์ทั้งหมดจาก local ไปยัง container
 COPY . .
 
@@ -20,4 +17,4 @@ COPY . .
 EXPOSE 3000
 
 # รันคำสั่งเพื่อเริ่มต้นแอป
-CMD ["node", "server.js"]
+CMD ["node", "sever.js"]
