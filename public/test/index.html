@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhexAir Token Claim</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.8.2/web3.min.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>PhexAir Token Claim</h1>
+        <div class="network-info">
+            <p><strong>Network Name:</strong> Smart Chain — Testnet</p>
+            <p><strong>New RPC URL:</strong> <a href="https://data-seed-prebsc-1-s1.binance.org:8545/" target="_blank">https://data-seed-prebsc-1-s1.binance.org:8545/</a></p>
+            <p><strong>ChainID:</strong> 97</p>
+            <p><strong>Symbol:</strong> BNB</p>
+            <p><strong>Block Explorer URL:</strong> <a href="https://testnet.bscscan.com" target="_blank">https://testnet.bscscan.com</a></p>
+            <h5><strong>Contract Address:</strong>0xBaC6582C82D278557309377A7eb8e48A282bd959</h5>
+        </div>
+
+        <div class="actions">
+            <button id="connectButton">Connect MetaMask</button>
+            <button id="generateQuestionButton" style="display:none;">Generate Math Question</button>
+            <p id="mathQuestion" style="display:none;"></p>
+            <input type="number" id="userAnswer" placeholder="Enter your answer" style="display:none;">
+            <button id="claimButton" style="display:none;">Claim 1000 PhexAir</button>
+        </div>
+
+        <p id="status"></p>
+    </div>
+
+    <script src="js/script.js"></script> <!-- Ensure the path to your script is correct -->
+</body>
+
+</html>
